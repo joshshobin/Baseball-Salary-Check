@@ -68,6 +68,14 @@ export interface Player {
   stats: PlayerStats;
 }
 
+export interface PlayerOption {
+  id: string;
+  playerID: string;
+  year: number;
+  team: string;
+  salary: number;
+}
+
 export interface PlayerList {
   items: Player[];
   total: number;

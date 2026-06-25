@@ -15,6 +15,7 @@ export * from './listPlayersSort';
 export * from './listPlayersVerdict';
 export * from './player';
 export * from './playerList';
+export * from './playerOption';
 export * from './playerStats';
 export * from './predictionInput';
 export * from './predictionResult';

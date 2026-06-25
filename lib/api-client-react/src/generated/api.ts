@@ -26,6 +26,7 @@ import type {
   ListPlayersParams,
   Player,
   PlayerList,
+  PlayerOption,
   PredictionInput,
   PredictionResult,
   Summary
@@ -286,6 +287,84 @@ export function useGetPlayer<TData = Awaited<ReturnType<typeof getPlayer>>, TErr
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetPlayerQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListPlayerOptionsUrl = () => {
+
+
+
+
+  return `/api/player-options`
+}
+
+/**
+ * Lightweight list of every player-season (id, player id, year, team, salary) for populating selectors. No stats or valuations.
+ * @summary List all player-season options
+ */
+export const listPlayerOptions = async ( options?: RequestInit): Promise<PlayerOption[]> => {
+
+  return customFetch<PlayerOption[]>(getListPlayerOptionsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListPlayerOptionsQueryKey = () => {
+    return [
+    `/api/player-options`
+    ] as const;
+    }
+
+
+export const getListPlayerOptionsQueryOptions = <TData = Awaited<ReturnType<typeof listPlayerOptions>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listPlayerOptions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListPlayerOptionsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listPlayerOptions>>> = ({ signal }) => listPlayerOptions({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listPlayerOptions>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListPlayerOptionsQueryResult = NonNullable<Awaited<ReturnType<typeof listPlayerOptions>>>
+export type ListPlayerOptionsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List all player-season options
+ */
+
+export function useListPlayerOptions<TData = Awaited<ReturnType<typeof listPlayerOptions>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listPlayerOptions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListPlayerOptionsQueryOptions(options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

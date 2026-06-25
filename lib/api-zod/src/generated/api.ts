@@ -127,6 +127,20 @@ export const GetPlayerResponse = zod.object({
 
 
 /**
+ * Lightweight list of every player-season (id, player id, year, team, salary) for populating selectors. No stats or valuations.
+ * @summary List all player-season options
+ */
+export const ListPlayerOptionsResponseItem = zod.object({
+  "id": zod.string(),
+  "playerID": zod.string(),
+  "year": zod.number(),
+  "team": zod.string(),
+  "salary": zod.number()
+})
+export const ListPlayerOptionsResponse = zod.array(ListPlayerOptionsResponseItem)
+
+
+/**
  * Aggregate statistics across the full dataset, including model verdict breakdown.
  * @summary Dataset summary
  */

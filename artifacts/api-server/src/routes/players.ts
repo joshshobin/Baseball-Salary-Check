@@ -70,6 +70,17 @@ router.get("/players", (req, res): void => {
   res.json({ items: page, total });
 });
 
+router.get("/player-options", (_req, res): void => {
+  const options = players.map((p) => ({
+    id: p.id,
+    playerID: p.playerID,
+    year: p.year,
+    team: p.team,
+    salary: p.salary,
+  }));
+  res.json(options);
+});
+
 router.get("/summary", (_req, res): void => {
   const salaries = players.map((p) => p.salary);
   const sortedSalaries = [...salaries].sort((a, b) => a - b);

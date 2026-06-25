@@ -109,6 +109,21 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /player-options:
+    get:
+      operationId: listPlayerOptions
+      tags: [players]
+      summary: List all player-season options
+      description: Lightweight list of every player-season (id, player id, year, team, salary) for populating selectors. No stats or valuations.
+      responses:
+        "200":
+          description: All player-season options.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PlayerOption"
   /summary:
     get:
       operationId: getSummary
@@ -264,6 +279,20 @@ components:
           $ref: "#/components/schemas/Verdict"
         stats:
           $ref: "#/components/schemas/PlayerStats"
+    PlayerOption:
+      type: object
+      required:
+        - id
+        - playerID
+        - year
+        - team
+        - salary
+      properties:
+        id: { type: string }
+        playerID: { type: string }
+        year: { type: integer }
+        team: { type: string }
+        salary: { type: integer }
     PlayerList:
       type: object
       required:

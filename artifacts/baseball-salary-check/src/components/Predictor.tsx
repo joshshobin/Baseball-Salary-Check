@@ -1,25 +1,37 @@
-import { useState, useRef, useEffect } from "react";
-import { useListPlayers, useGetPlayer, usePredictSalary } from "@workspace/api-client-react";
+import { useState, useEffect, useMemo } from "react";
+import { useListPlayerOptions, useGetPlayer, usePredictSalary } from "@workspace/api-client-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { formatCurrency, formatPercent, cn, getVerdictColor, getVerdictBadgeColor } from "@/lib/utils";
 import { Search, ChevronDown, Check, Loader2, DollarSign } from "lucide-react";
-import { useDebounce } from "@/hooks/use-debounce";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 
 export function PredictorSection({ onSelectExample }: { onSelectExample?: (id: string) => void }) {
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const debouncedSearch = useDebounce(searchQuery, 300);
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
-  
-  const { data: searchResults, isLoading: isSearchLoading } = useListPlayers(
-    { q: debouncedSearch, limit: 10 },
-    { query: { enabled: open, queryKey: ["search", debouncedSearch] } }
-  );
+
+  const { data: allOptions, isLoading: isSearchLoading } = useListPlayerOptions({
+    query: { queryKey: ["player-options"], staleTime: Infinity },
+  });
+
+  const filteredResults = useMemo(() => {
+    const options = allOptions ?? [];
+    const needle = searchQuery.trim().toLowerCase();
+    const matches = needle
+      ? options.filter(
+          (p) =>
+            p.playerID.toLowerCase().includes(needle) ||
+            p.team.toLowerCase().includes(needle) ||
+            p.id.toLowerCase().includes(needle) ||
+            String(p.year).includes(needle),
+        )
+      : options;
+    return matches.slice(0, 100);
+  }, [allOptions, searchQuery]);
 
   const { data: player, isLoading: isPlayerLoading } = useGetPlayer(selectedPlayerId!, {
     query: { enabled: !!selectedPlayerId, queryKey: ["player", selectedPlayerId] }
@@ -86,9 +98,9 @@ export function PredictorSection({ onSelectExample }: { onSelectExample?: (id: s
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-[400px] p-0 bg-card border-white/10" align="start">
-                    <Command>
+                    <Command shouldFilter={false}>
                       <CommandInput 
-                        placeholder="Search by ID or team..." 
+                        placeholder="Search by ID, team, or year..." 
                         value={searchQuery}
                         onValueChange={setSearchQuery}
                       />
@@ -101,7 +113,7 @@ export function PredictorSection({ onSelectExample }: { onSelectExample?: (id: s
                           ) : "No players found."}
                         </CommandEmpty>
                         <CommandGroup>
-                          {searchResults?.items.map((p) => (
+                          {filteredResults.map((p) => (
                             <CommandItem
                               key={p.id}
                               value={p.id}
