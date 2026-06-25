@@ -1,0 +1,8 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "ihDY6ZzYTgQ5IKqJ0-W53"
+uri = "file://artifacts/baseball-salary-check/public/stadium-bg.png"
+type = "image"
+title = "Baseball stadium at night"

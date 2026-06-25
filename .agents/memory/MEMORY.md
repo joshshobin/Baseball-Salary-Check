@@ -1,0 +1,2 @@
+- [Porting sklearn models to TS](sklearn-model-port.md) — extract .joblib params to JSON, reimplement math in TypeScript, verify parity on the full dataset; no Python at runtime.
+- [Radix Select empty value](radix-select-empty-value.md) — never use `value=""` in a shadcn/Radix SelectItem; it throws at runtime. Use a sentinel like "default"/"all" and map to undefined.
